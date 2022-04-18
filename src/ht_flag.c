@@ -7,7 +7,6 @@
 #include "utlist.h"
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <assert.h>
 #include <stdint.h>
 #include <string.h>
@@ -91,7 +90,6 @@ int HT_flag_pool_create_unsafe(intptr_t max_num_flags, HT_flag_pool_t * pool)
     pool_obj->flag_size = sizeof(HT_flag_t) + FLAG_HEADER_SIZE;
     /* Calculate based on page size. Avoids wastage in registered pages */
     pool_obj->num_flags_in_block = FLAG_PAGE_SIZE / pool_obj->flag_size;
-    printf("num_flags_in_block %d\n", pool_obj->num_flags_in_block);
     assert(max_num_flags >= 0);
     if (max_num_flags == 0) {
         /* 0 means unlimited */

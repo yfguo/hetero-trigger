@@ -55,6 +55,17 @@ typedef struct {
     volatile HT_flag_t *flag;
 } HT_queued_op_t;
 
+void usage(void)
+{
+    printf("set-perf: performance test for HT_set\n");
+    printf("    ./set_perf -m <mode> -i <iteration> -n <num of ops>\n");
+    printf("    mode: \n");
+    printf("        1=MT_MODE_HOST_FN\n");
+    printf("        2=MT_MODE_KERNEL\n");
+    printf("        3=MT_MODE_STREAM_MEM_OP\n");
+    printf("    num of ops: must be less than 1020\n");
+}
+
 int main(int argc, char *argv[])
 {
     CUresult res;
@@ -71,6 +82,29 @@ int main(int argc, char *argv[])
     volatile HT_flag_t *flag_sync;
     int n_flags = 1000;
     int n_iter = 1;
+
+    if (argc != 7) {
+        usage();
+        exit(0);
+    }
+
+    n_flags = atoi(argv[6]);
+    n_iter = atoi(argv[4]);
+    int mode = atoi(argv[6]);
+    switch (mode) {
+        case 1:
+            HT_stream_op_mode = HT_MODE_HOST_FN;
+            break;
+        case 2:
+            HT_stream_op_mode = HT_MODE_KERNEL;
+            break;
+        case 3:
+            HT_stream_op_mode = HT_MODE_STREAM_MEM_OP;
+            break;
+        default:
+            fprintf(stderr, "Invalid mode %d\n", mode);
+            exit(-1);
+    }
 
     CU_CALL(cuInit(0));
 
@@ -89,7 +123,6 @@ int main(int argc, char *argv[])
     flag_sync->host_val = HT_FLAG_UNSET;
 
     /* block start */
-    HT_stream_op_mode = HT_MODE_KERNEL;
     HT_wait(flag_sync, HT_FLAG_SET, stream);
     /* do work */
     cudaEventRecord(ev_start, stream);
