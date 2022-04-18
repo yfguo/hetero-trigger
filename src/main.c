@@ -52,7 +52,7 @@
     } while (0)
 
 typedef struct {
-    HT_flag_t *flag;
+    volatile HT_flag_t *flag;
 } HT_queued_op_t;
 
 int main(int argc, char *argv[])
@@ -68,8 +68,8 @@ int main(int argc, char *argv[])
 
     HT_flag_pool_t flag_pool;
     HT_queued_op_t *ops = NULL;
-    HT_flag_t *flag_sync;
-    int n_flags = 10;
+    volatile HT_flag_t *flag_sync;
+    int n_flags = 1000;
     int n_iter = 1;
 
     CU_CALL(cuInit(0));
@@ -89,16 +89,16 @@ int main(int argc, char *argv[])
     flag_sync->host_val = HT_FLAG_UNSET;
 
     /* block start */
-    HT_stream_op_mode = HT_MODE_HOST_FN;
+    HT_stream_op_mode = HT_MODE_KERNEL;
     HT_wait(flag_sync, HT_FLAG_SET, stream);
     /* do work */
     cudaEventRecord(ev_start, stream);
     clock_gettime(CLOCK_REALTIME, &issue_start);
     for (int i = 0; i < n_flags; ++i) {
-        HT_set(ops[i].flag, 1, stream);
+        HT_set(ops[i].flag, HT_FLAG_SET, stream);
     }
     clock_gettime(CLOCK_REALTIME, &issue_stop);
-    cudaEventRecord(ev_stop, stream);
+    CUDA_CALL(cudaEventRecord(ev_stop, stream));
     /* all enqueued, start running stream */
     flag_sync->host_val = HT_FLAG_SET;
     clock_gettime(CLOCK_REALTIME, &sync_start);

@@ -225,7 +225,7 @@ static void remove_free_blocks(private_pool_s * pool_obj, flag_block_s * block)
     }
 }
 
-int HT_flag_pool_alloc_flag(HT_flag_pool_t pool, HT_flag_t **flag)
+int HT_flag_pool_alloc_flag(HT_flag_pool_t pool, volatile HT_flag_t **flag)
 {
     int rc = 0;
     private_pool_s *pool_obj = (private_pool_s *) pool;
@@ -271,7 +271,7 @@ int HT_flag_pool_alloc_flag(HT_flag_pool_t pool, HT_flag_t **flag)
     goto fn_exit;
 }
 
-int HT_flag_pool_free_flag(HT_flag_pool_t pool, HT_flag_t *flag)
+int HT_flag_pool_free_flag(HT_flag_pool_t pool, volatile HT_flag_t *flag)
 {
     int rc = 0;
     private_pool_s *pool_obj = (private_pool_s *) pool;

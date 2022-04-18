@@ -1,7 +1,7 @@
 TARGET_EXEC ?= main
 
 BUILD_DIR ?= ./build
-SRC_DIRS ?= ./
+SRC_DIRS ?= ./src
 
 SRCS := $(shell find $(SRC_DIRS) -name "*.cpp" -or -name "*.c" -or -name "*.cu")
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
@@ -12,8 +12,10 @@ INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
 MPI_HOME=$(HOME)/.local/mpi/current
 CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -I/opt/cuda/include
-CC=$(MPI_HOME)/bin/mpicc
 NVCC=/opt/cuda/bin/nvcc
+NVCC_FLAGS=-g
+CFLAGS=-g
+CC=$(NVCC)
 LDFLAGS=-L/opt/cuda/lib64 -lcudart -lcuda
 
 $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)

@@ -26,7 +26,7 @@ typedef enum {
 
 int HT_flag_pool_create_unsafe(intptr_t max_num_cells, HT_flag_pool_t * pool);
 int HT_flag_pool_destroy_unsafe(HT_flag_pool_t pool);
-int HT_flag_pool_alloc_flag(HT_flag_pool_t pool, HT_flag_t **flag);
-int HT_flag_pool_free_flag(HT_flag_pool_t pool, HT_flag_t *flag);
+int HT_flag_pool_alloc_flag(HT_flag_pool_t pool, volatile HT_flag_t **flag);
+int HT_flag_pool_free_flag(HT_flag_pool_t pool, volatile HT_flag_t *flag);
 
 #endif /* HT_FLAG_POOL_H_INCLUDED */
