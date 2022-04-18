@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 
     n_flags = atoi(argv[6]);
     n_iter = atoi(argv[4]);
-    int mode = atoi(argv[6]);
+    int mode = atoi(argv[2]);
     switch (mode) {
         case 1:
             HT_stream_op_mode = HT_MODE_HOST_FN;
