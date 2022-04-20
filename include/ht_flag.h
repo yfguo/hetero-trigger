@@ -20,8 +20,9 @@ typedef struct {
 } HT_flag_t;
 
 typedef enum {
-    HT_FLAG_UNSET = 0,
-    HT_FLAG_SET = 1
+    HT_FLAG_QUEUED = 0,
+    HT_FLAG_TRIGGERED,
+    HT_FLAG_PENDDING
 } HT_flag_state_e;
 
 int HT_flag_pool_create_unsafe(intptr_t max_num_cells, HT_flag_pool_t * pool);

@@ -120,20 +120,20 @@ int main(int argc, char *argv[])
         HT_flag_pool_alloc_flag(flag_pool, &(ops[i].flag));
     }
     HT_flag_pool_alloc_flag(flag_pool, &flag_sync);
-    flag_sync->host_val = HT_FLAG_UNSET;
+    flag_sync->host_val = HT_FLAG_QUEUED;
 
     /* block start */
-    HT_wait(flag_sync, HT_FLAG_SET, stream);
+    HT_wait(flag_sync, HT_FLAG_TRIGGERED, stream);
     /* do work */
     cudaEventRecord(ev_start, stream);
     clock_gettime(CLOCK_REALTIME, &issue_start);
     for (int i = 0; i < n_flags; ++i) {
-        HT_set(ops[i].flag, HT_FLAG_SET, stream);
+        HT_set(ops[i].flag, HT_FLAG_TRIGGERED, stream);
     }
     clock_gettime(CLOCK_REALTIME, &issue_stop);
     CUDA_CALL(cudaEventRecord(ev_stop, stream));
     /* all enqueued, start running stream */
-    flag_sync->host_val = HT_FLAG_SET;
+    flag_sync->host_val = HT_FLAG_TRIGGERED;
     clock_gettime(CLOCK_REALTIME, &sync_start);
     cudaStreamSynchronize(stream);
     clock_gettime(CLOCK_REALTIME, &sync_stop);
