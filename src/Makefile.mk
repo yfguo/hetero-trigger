@@ -8,6 +8,7 @@ EXTRA_DIST += $(top_srcdir)/src/cudalt.sh
 
 libht_la_SOURCES += \
 	src/ht_flag.c \
+	src/ht_queue.c \
 	src/ht_op.cu
 
 .cu.lo:
