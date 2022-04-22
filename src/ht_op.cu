@@ -28,6 +28,7 @@ int HT_stream_op_mode = HT_MODE_KERNEL;
 __global__ void HT_kernel_set(volatile uint64_t* var, uint64_t val)
 {
     *var = val;
+    __threadfence_system();
 }
 
 __global__ void HT_kernel_wait(volatile uint64_t* var, uint64_t val)
