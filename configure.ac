@@ -368,6 +368,56 @@ if test "$with_cuda" != "no" ; then
     fi
 fi
 
+# --with-hip
+PAC_SET_HEADER_LIB_PATH([hip])
+if test "$with_hip" != "no" ; then
+    PAC_PUSH_FLAG(CPPFLAGS)
+    PAC_APPEND_FLAG([-D__HIP_PLATFORM_AMD__], [CPPFLAGS])
+    PAC_CHECK_HEADER_LIB([hip/hip_runtime_api.h],[amdhip64],[hipStreamSynchronize],[have_hip=yes],[have_hip=no])
+    PAC_POP_FLAG(CPPFLAGS)
+    if test "${have_hip}" = "yes" ; then
+        AC_MSG_CHECKING([whether hipcc works])
+        cat>conftest.c<<EOF
+        #include <hip/hip_runtime_api.h>
+        void foo(int deviceId) {
+        hipError_t ret;
+        ret = hipGetDevice(&deviceId);
+        }
+EOF
+        PAC_PUSH_FLAG(CPPFLAGS)
+        PAC_APPEND_FLAG([-D__HIP_PLATFORM_AMD__], [CPPFLAGS])
+        ${with_hip}/bin/hipcc -c conftest.c 2> /dev/null
+        PAC_POP_FLAG(CPPFLAGS)
+        if test "$?" = "0" ; then
+            AC_DEFINE([HAVE_HIP],[1],[Define is HIP is available])
+            PAC_APPEND_FLAG([-D__HIP_PLATFORM_AMD__], [CPPFLAGS])
+            AS_IF([test -n "${with_hip}"],[HIPCC=${with_hip}/bin/hipcc],[HIPCC=hipcc])
+            AC_SUBST(HIPCC)
+            # hipcc compiled applications need libstdc++ to be able to link
+            # with a C compiler
+            PAC_PUSH_FLAG([LIBS])
+            PAC_APPEND_FLAG([-lstdc++],[LIBS])
+            AC_LINK_IFELSE(
+                [AC_LANG_PROGRAM([int x = 5;],[x++;])],
+                [libstdcpp_works=yes],
+                [libstdcpp_works=no])
+            PAC_POP_FLAG([LIBS])
+            if test "${libstdcpp_works}" = "yes" ; then
+                PAC_APPEND_FLAG([-lstdc++],[LIBS])
+                AC_MSG_RESULT([yes])
+            else
+                have_hip=no
+                AC_MSG_RESULT([no])
+                AC_MSG_ERROR([hipcc compiled applications need libstdc++ to be able to link with a C compiler])
+            fi
+        else
+            have_hip=no
+            AC_MSG_RESULT([no])
+        fi
+        rm -f conftest.*
+    fi
+fi
+
 # check for attribute support
 PAC_C_GNU_ATTRIBUTE
 
