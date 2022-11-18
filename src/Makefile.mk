@@ -27,11 +27,11 @@ libht_la_SOURCES += \
 	src/ht_op.hip
 .hip.lo:
 	@if $(AM_V_P) ; then \
-		$(top_srcdir)/src/cudalt.sh --verbose $@ \
-			$(NVCC) $(NVCC_FLAGS) $(AM_CPPFLAGS) $(CUDA_GENCODE) -c $< ; \
+		$(top_srcdir)/src/hiplt.sh --verbose $@ \
+			$(HIPCC) $(AM_CPPFLAGS) -g $(HIP_GENCODE) -c $< ; \
 	else \
-		echo "  NVCC     $@" ; \
-		$(top_srcdir)/src/cudalt.sh $@ $(NVCC) $(NVCC_FLAGS) $(AM_CPPFLAGS) $(CUDA_GENCODE) -c $< ; \
+		echo "  HIPCC     $@" ; \
+		$(top_srcdir)/src/hiplt.sh $@ $(HIPCC) $(AM_CPPFLAGS) -g $(HIP_GENCODE) -c $< ; \
 	fi
 else
 if HAVE_ZE
