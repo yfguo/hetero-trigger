@@ -3,8 +3,15 @@
 
 #include "ht_flag.h"
 
-#include <cuda.h>
-#include <cuda_runtime.h>
+#ifdef HAVE_CUDA
+#include "ht_cuda.h"
+#elif HAVE_HIP
+#include "ht_hip.h"
+#elif HAVE_ZE
+#include "ht_ze.h"
+#else
+#error "No GPU support configured"
+#endif
 
 typedef struct HT_queue_op {
     volatile HT_flag_t *flag;
@@ -27,9 +34,9 @@ int HT_queue_op_register(int id, HT_queue_op_cb_t cb);
 
 int HT_queue_init();
 int HT_queue_destroy();
-int HT_queue_op_enqueue(int id, void *data, cudaStream_t stream);
+int HT_queue_op_enqueue(int id, void *data, HT_GPU_Stream_t stream);
 int HT_queue_process();
 
-int HT_printf_enqueue(uint64_t data, cudaStream_t stream);
+int HT_printf_enqueue(uint64_t data, HT_GPU_Stream_t stream);
 
 #endif /* ifndef HT_QUEUE_H_INCLUDED */

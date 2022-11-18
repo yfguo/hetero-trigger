@@ -2,9 +2,6 @@
 #include "ht_op.h"
 #include "utlist.h"
 
-#include <cuda.h>
-#include <cuda_runtime.h>
-
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,7 +43,7 @@ int HT_queue_op_register(int id, HT_queue_op_cb_t cb)
     return 0;
 }
 
-int HT_queue_op_enqueue(int id, void *data, cudaStream_t stream)
+int HT_queue_op_enqueue(int id, void *data, HT_GPU_Stream_t stream)
 {
     HT_queue_op_t *q_op = NULL;
     q_op = (HT_queue_op_t *) malloc(sizeof(HT_queue_op_t));
@@ -66,7 +63,7 @@ int HT_queue_op_enqueue(int id, void *data, cudaStream_t stream)
     return 0;
 }
 
-int HT_printf_enqueue(uint64_t data, cudaStream_t stream)
+int HT_printf_enqueue(uint64_t data, HT_GPU_Stream_t stream)
 {
     return HT_queue_op_enqueue(HT_QUEUE_OP_PRINTF, (void *) data, stream);
 }

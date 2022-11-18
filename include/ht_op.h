@@ -2,8 +2,6 @@
 #define HT_STREAM_OP
 
 #include <stdint.h>
-#include "cuda.h"
-#include "cuda_runtime.h"
 #include "ht_flag.h"
 
 enum {
@@ -12,6 +10,15 @@ enum {
     HT_MODE_STREAM_MEM_OP
 };
 
+#ifdef HAVE_CUDA
+#include "ht_cuda.h"
+#elif HAVE_HIP
+#include "ht_hip.h"
+#elif HAVE_ZE
+#include "ht_ze.h"
+#else
+#error "No GPU support configured"
+#endif
 
 __global__ void HT_kernel_set(volatile uint64_t* var, uint64_t val);
 __global__ void HT_kernel_wait(volatile uint64_t* var, uint64_t val);
@@ -20,8 +27,8 @@ __global__ void HT_kernel_wait(volatile uint64_t* var, uint64_t val);
 extern "C" {
 #endif
     extern int HT_stream_op_mode;
-    void HT_set(volatile HT_flag_t* flag, uint64_t val, cudaStream_t stream);
-    void HT_wait(volatile HT_flag_t* flag, uint64_t val, cudaStream_t stream);
+    void HT_set(volatile HT_flag_t* flag, uint64_t val, HT_GPU_Stream_t stream);
+    void HT_wait(volatile HT_flag_t* flag, uint64_t val, HT_GPU_Stream_t stream);
 #ifdef __cplusplus
 }
 #endif
