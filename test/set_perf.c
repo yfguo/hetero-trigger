@@ -99,6 +99,9 @@ int main(int argc, char *argv[])
             HT_stream_op_mode = HT_MODE_KERNEL;
             break;
         case 3:
+            HT_stream_op_mode = HT_MODE_KERNEL_NOFENCE;
+            break;
+        case 4:
             HT_stream_op_mode = HT_MODE_STREAM_MEM_OP;
             break;
         default:

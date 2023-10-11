@@ -31,6 +31,11 @@ __global__ void HT_kernel_set(volatile uint64_t* var, uint64_t val)
     __threadfence_system();
 }
 
+__global__ void HT_kernel_set_nofence(volatile uint64_t* var, uint64_t val)
+{
+    *var = val;
+}
+
 __global__ void HT_kernel_wait(volatile uint64_t* var, uint64_t val)
 {
     while(*var != val);
@@ -68,6 +73,10 @@ void HT_set(volatile HT_flag_t* flag, uint64_t val, cudaStream_t stream)
             HT_kernel_set<<<1,1,0,stream>>>(flag->dev_ptr, val);
             CUDA_CALL(cudaPeekAtLastError());
             break;
+        case HT_MODE_KERNEL_NOFENCE:
+            HT_kernel_set_nofence<<<1,1,0,stream>>>(flag->dev_ptr, val);
+            CUDA_CALL(cudaPeekAtLastError());
+            break;
         case HT_MODE_STREAM_MEM_OP:
             CU_CALL(cuStreamWriteValue64(stream, (CUdeviceptr) flag->dev_ptr, val, 0));
             break;
@@ -88,6 +97,7 @@ void HT_wait(volatile HT_flag_t* flag, uint64_t val, cudaStream_t stream)
             }
             break;
         case HT_MODE_KERNEL:
+        case HT_MODE_KERNEL_NOFENCE:
             HT_kernel_wait<<<1,1,0,stream>>>(flag->dev_ptr, val);
             CUDA_CALL(cudaPeekAtLastError());
             break;

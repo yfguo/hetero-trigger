@@ -7,6 +7,7 @@
 enum {
     HT_MODE_HOST_FN,
     HT_MODE_KERNEL,
+    HT_MODE_KERNEL_NOFENCE,
     HT_MODE_STREAM_MEM_OP
 };
 
@@ -21,6 +22,7 @@ enum {
 #endif
 
 __global__ void HT_kernel_set(volatile uint64_t* var, uint64_t val);
+__global__ void HT_kernel_set_nofence(volatile uint64_t* var, uint64_t val);
 __global__ void HT_kernel_wait(volatile uint64_t* var, uint64_t val);
 
 #ifdef __cplusplus
